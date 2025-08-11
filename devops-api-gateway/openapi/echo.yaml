@@ -1,0 +1,45 @@
+openapi: 3.0.3
+info:
+  title: Echo API via Kong
+  version: 0.1.0
+  description: Simple echo API proxied through Kong with key-auth and rate limiting.
+servers:
+  - url: http://localhost:8000
+paths:
+  /echo:
+    get:
+      summary: Echo request info
+      security:
+        - ApiKeyAuth: []
+      responses:
+        '200':
+          description: Echoed payload
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+    post:
+      summary: Echo request info (POST)
+      security:
+        - ApiKeyAuth: []
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: Echoed payload
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+components:
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: apikey

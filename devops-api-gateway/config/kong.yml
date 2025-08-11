@@ -1,0 +1,33 @@
+_format_version: "3.0"
+_transform: true
+
+services:
+  - name: echo-service
+    url: http://echo:80
+    routes:
+      - name: echo-route
+        paths:
+          - /echo
+        strip_path: true
+        methods:
+          - GET
+          - POST
+          - PUT
+          - DELETE
+        plugins:
+          - name: rate-limiting
+            config:
+              minute: 60
+              policy: local
+
+plugins:
+  - name: key-auth
+    config:
+      key_names:
+        - apikey
+      hide_credentials: true
+
+consumers:
+  - username: demo-consumer
+    keyauth_credentials:
+      - key: DEMO-API-KEY
