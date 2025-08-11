@@ -1,0 +1,39 @@
+version: "3.9"
+
+services:
+  hello-service:
+    image: nginxdemos/hello:plain-text
+    container_name: hello-service
+    ports:
+      - "8080:80"
+
+  kong:
+    image: kong:3.6
+    container_name: kong-gateway
+    environment:
+      KONG_DATABASE: "off"
+      KONG_DECLARATIVE_CONFIG: "/etc/kong/kong.yml"
+      KONG_ADMIN_LISTEN: "0.0.0.0:8001, 0.0.0.0:8444 ssl"
+      KONG_PROXY_LISTEN: "0.0.0.0:8000, 0.0.0.0:8443 ssl"
+      KONG_PROXY_ACCESS_LOG: "/dev/stdout"
+      KONG_ADMIN_ACCESS_LOG: "/dev/stdout"
+      KONG_PROXY_ERROR_LOG: "/dev/stderr"
+      KONG_ADMIN_ERROR_LOG: "/dev/stderr"
+    volumes:
+      - ./kong.yml:/etc/kong/kong.yml:ro
+    ports:
+      - "8000:8000"   # proxy (http)
+      - "8443:8443"   # proxy (https)
+      - "8001:8001"   # admin api (http)
+      - "8444:8444"   # admin api (https)
+    depends_on:
+      - hello-service
+    healthcheck:
+      test: ["CMD", "kong", "health"]
+      interval: 10s
+      timeout: 10s
+      retries: 10
+
+networks:
+  default:
+    name: api-gateway-net

@@ -1,0 +1,29 @@
+# OS / Editor
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+.idea/
+.vscode/
+.project
+.classpath
+.settings/
+
+# Logs
+logs/
+*.log
+
+# Node (if used later)
+node_modules/
+
+# Python (if used later)
+__pycache__/
+*.pyc
+.venv/
+
+# Docker
+**/.env
+
+# Generated files
+**/target/
+**/build/

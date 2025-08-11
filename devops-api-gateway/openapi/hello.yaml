@@ -1,0 +1,25 @@
+openapi: 3.0.3
+info:
+  title: Hello API via Kong
+  version: 1.0.0
+  description: Simple upstream hello service exposed through Kong at GET /hello
+servers:
+  - url: http://localhost:8000
+    description: Kong HTTP proxy
+paths:
+  /hello:
+    get:
+      summary: Returns a hello response from the upstream service
+      responses:
+        '200':
+          description: Successful response
+          content:
+            text/plain:
+              schema:
+                type: string
+              example: |
+                Server address: 172.18.0.3:80
+                Server name: 172.18.0.3
+                Date: 01/01/1970
+                URI: /
+                Request ID: 123

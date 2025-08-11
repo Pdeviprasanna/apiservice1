@@ -1,0 +1,23 @@
+_format_version: "3.0"
+_transform: true
+
+services:
+  - name: hello
+    url: http://hello-service:80
+    routes:
+      - name: hello-route
+        paths:
+          - /hello
+        strip_path: true
+
+# Uncomment these in Phase 3 for security and rate-limiting examples
+#plugins:
+#  - name: key-auth
+#    config:
+#      key_in_body: false
+#      key_names:
+#        - apikey
+#  - name: rate-limiting
+#    config:
+#      second: 5
+#      policy: local

@@ -1,53 +1,52 @@
-## DevOps-Driven API Gateway Management System (Prototype - Phase 1)
+## DevOps-Driven API Gateway Management System (Phase 1 Prototype)
 
-This is a minimal Stage 1 prototype using Kong Gateway in DB-less mode with a sample upstream echo service. It lays groundwork for later phases: CI/CD, security policies, analytics/monitoring, and version control.
-
-### Prerequisites
-- Docker and Docker Compose
-
-### Quickstart
-```bash
-cd devops-api-gateway
-docker compose up -d
-# Wait ~10s for Kong to be healthy
-
-# Call the proxied echo API (requires API key)
-curl -sS http://localhost:8000/echo -H 'apikey: DEMO-API-KEY' | jq .
-
-# Rate limit is 60 req/min per consumer on this route. Exceeding returns 429.
-```
-
-- Kong Admin API: http://localhost:8001
-- Upstream echo service (bypassing gateway): http://localhost:8080
+This is a minimal Stage 1 prototype that sets up API gateway infrastructure using Kong in DB-less mode and a simple upstream service. It is designed to be imported into Eclipse as a plain project (no code build required for Phase 1).
 
 ### What’s included
-- `docker-compose.yml`: Kong in DB-less mode + upstream echo container
-- `config/kong.yml`: Declarative configuration
-  - Service/route: `/echo`
-  - Global `key-auth` plugin
-  - Per-route `rate-limiting` (60 req/min, local policy)
-  - Demo consumer `demo-consumer` with API key `DEMO-API-KEY`
-- `openapi/echo.yaml`: Minimal OpenAPI 3.0 spec for the proxied echo API
+- Kong Gateway (DB-less) with declarative config (`infra/kong.yml`)
+- Simple upstream service (`hello-service`) using `nginxdemos/hello`
+- An example OpenAPI spec for the `GET /hello` API (`openapi/hello.yaml`)
 
-### Roadmap Alignment
-- Phase 1: API gateway infrastructure (this prototype)
-- Phase 2: CI/CD for declarative config and specs
-- Phase 3: Expanded security (OAuth 2.0, mTLS), advanced rate limiting
-- Phase 4: Analytics/monitoring (Prometheus/Grafana, ELK/Splunk)
-- Phase 5: Tests and deployment hardening
+### How it works
+- `Kong` listens on:
+  - Admin API: `http://localhost:8001`
+  - Proxy (HTTP): `http://localhost:8000`
+- `hello-service` listens on `http://localhost:8080`
+- Kong routes `GET /hello` to the upstream service
 
-### Next Steps (suggested)
-- Add GitHub Actions to validate `kong.yml` with `deck` and lint `openapi/echo.yaml` on PRs
-- Introduce versioned routes, e.g., `/v1/echo` and `/v2/echo`, with backward compatibility
-- Add observability: enable Prometheus metrics, wire to Grafana dashboards
-- Integrate centralized logging to Elastic Stack or Splunk
-- Add OAuth 2.0 authorization server or OIDC provider; swap route auth to JWT/OIDC
+### Run locally (Docker Compose)
+1. Prerequisites: Docker and Docker Compose installed.
+2. From the project root:
+   ```sh
+   cd infra
+   docker compose up -d
+   ```
+3. Test the proxy through Kong:
+   ```sh
+   curl -i http://localhost:8000/hello
+   ```
+   You should see a 200 response from the upstream.
+4. Stop the stack:
+   ```sh
+   docker compose down
+   ```
+
+### Import into Eclipse
+- File → Import → General → Existing Projects into Workspace → Select the project root directory → Finish.
+- You can keep using Eclipse for documentation, roadmap, and config editing in Phase 1. Application code and CI/CD will be added in later phases.
+
+### Roadmap (from prompt)
+- Phase 1: Set up API gateway infrastructure. (this project)
+- Phase 2: Develop CI/CD pipelines for API deployment.
+- Phase 3: Implement security and rate-limiting policies (OAuth, API keys, rate limits).
+- Phase 4: Add analytics and monitoring capabilities (Elastic Stack, Splunk).
+- Phase 5: Test and deploy the API gateway management system.
 
 ### Standards
-- OpenAPI Specification (OAS) for API definitions
-- ISO/IEC 27001-aligned controls to be elaborated in later phases (access control, change mgmt)
+- OpenAPI Specification (OAS) for API definitions (`openapi/hello.yaml`).
+- ISO/IEC 27001 principles considered from Phase 3 onward (security hardening, policies, access control, audit).
 
-### Cleanup
-```bash
-docker compose down -v
-```
+### Next steps (suggested)
+- Add a GitHub Actions workflow to validate Kong declarative config and OpenAPI.
+- Add security plugins (Key Auth, Rate Limiting) in `infra/kong.yml`.
+- Add observability stack (e.g., `Prometheus + Grafana`, or ship logs/metrics to `Elastic/Splunk`).
